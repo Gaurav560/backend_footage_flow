@@ -402,21 +402,17 @@ GCP_PROJECT_ID = None
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 if GEMINI_API_KEY:
     try:
-        # Use the new Google AI client with gemini-2.5-flash
-        client = genai.Client(api_key=GEMINI_API_KEY)
-        # Test the model
-        test_response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents="Hello"
-        )
-        print("Gemini AI initialized successfully with gemini-2.5-flash")
-        gemini_client = client
+        genai.configure(api_key=GEMINI_API_KEY)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        test_response = model.generate_content("Hello")
+        print("✅ Gemini AI initialized successfully with gemini-1.5-flash")
+        gemini_client = True  # Flag to indicate Gemini is available
     except Exception as e:
-        print(f"Warning: Gemini AI initialization failed: {str(e)}")
-        gemini_client = None
+        print(f"⚠️ Gemini AI initialization failed: {str(e)}")
+        gemini_client = False
 else:
-    gemini_client = None
-    print("Warning: GEMINI_API_KEY not set. Story generation will use enhanced mock data.")
+    gemini_client = False
+    print("⚠️ GEMINI_API_KEY not set. Story generation will use enhanced mock data.")
 
 # Upload configuration
 UPLOAD_FOLDER = os.getenv('UPLOAD_FOLDER', 'uploads')
@@ -518,10 +514,9 @@ Now analyze this input:
 {input_excerpt}
 """
 
-                response = gemini_client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=tagging_prompt
-                )
+                if gemini_client:
+                    model = genai.GenerativeModel('gemini-1.5-flash')
+                    response = model.generate_content(prompt)
                 raw = getattr(response, 'text', '') or ''
                 json_block = _extract_json_block(raw)
                 try:

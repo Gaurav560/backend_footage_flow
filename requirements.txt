@@ -5,23 +5,26 @@ gunicorn==21.2.0
 python-dotenv==1.0.0
 Werkzeug==3.0.1
 
-# Google Cloud dependencies (compatible versions)
+# Google Cloud dependencies
 google-auth>=2.15.0
 google-auth-oauthlib>=1.0.0
 google-auth-httplib2>=0.2.0
 google-cloud-speech>=2.20.0
 google-cloud-storage>=2.10.0
 google-cloud-vision>=3.4.0
-google-generativeai>=0.3.0
+google-generativeai>=0.8.0
 
-# Audio/Video processing (compatible versions)
+# Audio/Video processing
 opencv-python-headless>=4.8.0
 ffmpeg-python>=0.2.0
 SpeechRecognition>=3.10.0
 
-# Optional dependencies (will install if available)
-faster-whisper>=0.9.0; python_version<"3.13"
+# Whisper dependencies
+faster-whisper>=1.0.0
+openai-whisper>=20231117
 
 # Core dependencies
 numpy>=1.24.0,<2.0.0
 requests>=2.31.0
+pydantic>=2.0.0
+typing-extensions>=4.0.0
