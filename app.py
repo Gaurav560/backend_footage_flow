@@ -2007,6 +2007,18 @@ def transcribe_direct_video():
         return ('', 200)
     try:
         data = request.get_json() or {}
+        # Fast stub mode to diagnose CORS/network vs compute issues
+        if os.getenv('TRANSCRIBE_STUB_MODE', 'false').lower() == 'true':
+            vid = data.get('videoId') or 'unknown'
+            print(f"[STUB] /transcribe-direct-video hit for videoId={vid}")
+            return jsonify({
+                "success": True,
+                "transcription": "(stub) transcription not executed",
+                "language": "en",
+                "word_timestamps": [],
+                "word_count": 0,
+                "method": "stub"
+            }), 200
         video_id = data.get('videoId')
         
         if not video_id:
