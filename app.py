@@ -49,7 +49,12 @@ app = Flask(__name__)
 
 # Configure CORS to allow requests from frontend
 CORS(app, 
-     origins=["http://localhost:5173", "http://localhost:3000", "https://your-frontend-domain.com"],
+     origins=[
+         "http://localhost:5173", 
+         "http://localhost:3000", 
+         "https://frontend-footage-flow.vercel.app",
+         "https://*.vercel.app"
+     ],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization"],
      supports_credentials=True)
