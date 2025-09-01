@@ -95,24 +95,24 @@ def after_request(response):
 def cors_preflight(path):
     return ('', 204)
 
-# Lightweight endpoints to validate CORS from the frontend
-@app.route('/cors-test', methods=['GET'])
-def cors_test():
+# Lightweight endpoints to validate CORS from the frontend (unique paths to avoid collisions)
+@app.route('/diagnostics/cors-test', methods=['GET'])
+def diagnostics_cors_test():
     return jsonify({
         'ok': True,
-        'origin': request.headers.get('Origin'),
-        'path': '/cors-test'
+        'origin': request.headers.get('Origin') or 'No origin',
+        'path': '/diagnostics/cors-test'
     }), 200
 
-@app.route('/echo', methods=['POST'])
-def echo():
+@app.route('/diagnostics/echo', methods=['POST'])
+def diagnostics_echo():
     try:
         payload = request.get_json() or {}
     except Exception:
         payload = {}
     return jsonify({
         'ok': True,
-        'origin': request.headers.get('Origin'),
+        'origin': request.headers.get('Origin') or 'No origin',
         'received': payload
     }), 200
 
