@@ -1,5 +1,6 @@
 
 import os
+from urllib.parse import urlparse
 import json
 import base64
 import uuid
@@ -60,18 +61,39 @@ CORS(app,
      expose_headers=["Content-Type", "Authorization"])
 
 # Add manual CORS headers for all responses
+def _origin_allowed(origin: str) -> bool:
+    if not origin:
+        return False
+    allowed = {'https://frontend-footage-flow.vercel.app', 'http://localhost:5173', 'http://localhost:3000'}
+    if origin in allowed:
+        return True
+    try:
+        host = urlparse(origin).hostname or ''
+        if host.endswith('.vercel.app'):
+            return True
+    except Exception:
+        pass
+    return False
+
 @app.after_request
 def after_request(response):
     origin = request.headers.get('Origin')
-    allowed_origins = ['https://frontend-footage-flow.vercel.app', 'http://localhost:5173', 'http://localhost:3000']
-    if origin in allowed_origins:
+    if _origin_allowed(origin):
         response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Vary'] = 'Origin'
+        # Ensure caches vary by Origin for proxies
+        prev_vary = response.headers.get('Vary')
+        response.headers['Vary'] = f"{prev_vary}, Origin" if prev_vary else 'Origin'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,X-Requested-With,Accept'
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     response.headers['Access-Control-Max-Age'] = '600'
     return response
+
+# Global preflight route so any path returns a quick 204 with CORS headers
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def cors_preflight(path):
+    return ('', 204)
 
 
 
