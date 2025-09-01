@@ -46,7 +46,13 @@ else:
     print("⚠️ FFmpeg path not found locally - expecting cloud environment setup")
 
 app = Flask(__name__)
-CORS(app)
+
+# Configure CORS to allow requests from frontend
+CORS(app, 
+     origins=["http://localhost:5173", "http://localhost:3000", "https://your-frontend-domain.com"],
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"],
+     supports_credentials=True)
 
 # Initialize Whisper model globally (optimized for cloud deployment)
 WHISPER_MODEL = None
