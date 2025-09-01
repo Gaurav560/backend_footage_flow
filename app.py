@@ -34,6 +34,17 @@ from tagging import VisualTaggingService
 # Load environment variables
 load_dotenv()
 
+# Add FFmpeg to PATH if specified in environment (for local development)
+ffmpeg_path = os.getenv('FFMPEG_PATH')
+if ffmpeg_path and os.path.exists(ffmpeg_path):
+    current_path = os.environ.get('PATH', '')
+    if ffmpeg_path not in current_path:
+        os.environ['PATH'] = ffmpeg_path + os.pathsep + current_path
+        print(f"✅ Added FFmpeg to PATH: {ffmpeg_path}")
+else:
+    # For cloud deployment (Render), FFmpeg should be available via buildpack
+    print("⚠️ FFmpeg path not found locally - expecting cloud environment setup")
+
 app = Flask(__name__)
 CORS(app)
 
@@ -66,6 +77,70 @@ try:
 except Exception as e:
     FFMPEG_AVAILABLE = False
     print(f"⚠️ ffmpeg-python not available: {e}")
+
+def get_ffmpeg_path():
+    """Get the correct FFmpeg executable path"""
+    import shutil
+    
+    # First try to find ffmpeg in PATH (works in most cloud environments)
+    ffmpeg_path = shutil.which('ffmpeg')
+    if ffmpeg_path:
+        return ffmpeg_path
+    
+    # Try the environment variable path (for local development)
+    ffmpeg_env_path = os.getenv('FFMPEG_PATH')
+    if ffmpeg_env_path:
+        ffmpeg_exe = os.path.join(ffmpeg_env_path, "ffmpeg.exe")
+        if os.path.exists(ffmpeg_exe):
+            return ffmpeg_exe
+    
+    # Fallback to common installation paths (local development)
+    common_paths = [
+        "C:\\ffmpeg\\bin\\ffmpeg.exe",
+        "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+        "/usr/bin/ffmpeg",  # Linux/cloud environments
+        "/usr/local/bin/ffmpeg"  # Alternative Linux path
+    ]
+    
+    for path in common_paths:
+        if os.path.exists(path):
+            return path
+    
+    # If nothing found, return 'ffmpeg' and hope it's in PATH
+    print("⚠️ FFmpeg executable not found, using 'ffmpeg' command")
+    return 'ffmpeg'
+
+def get_ffprobe_path():
+    """Get the correct FFprobe executable path"""
+    import shutil
+    
+    # First try to find ffprobe in PATH (works in most cloud environments)
+    ffprobe_path = shutil.which('ffprobe')
+    if ffprobe_path:
+        return ffprobe_path
+    
+    # Try the environment variable path (for local development)
+    ffmpeg_env_path = os.getenv('FFMPEG_PATH')
+    if ffmpeg_env_path:
+        ffprobe_exe = os.path.join(ffmpeg_env_path, "ffprobe.exe")
+        if os.path.exists(ffprobe_exe):
+            return ffprobe_exe
+    
+    # Fallback to common installation paths
+    common_paths = [
+        "C:\\ffmpeg\\bin\\ffprobe.exe",
+        "C:\\Program Files\\ffmpeg\\bin\\ffprobe.exe",
+        "/usr/bin/ffprobe",  # Linux/cloud environments
+        "/usr/local/bin/ffprobe"  # Alternative Linux path
+    ]
+    
+    for path in common_paths:
+        if os.path.exists(path):
+            return path
+    
+    # If nothing found, return 'ffprobe' and hope it's in PATH
+    print("⚠️ FFprobe executable not found, using 'ffprobe' command")
+    return 'ffprobe'
 
 # Ensure users table exists at runtime
 def ensure_users_table():
@@ -706,11 +781,13 @@ def transcribe_video_with_gemini(video_path: str, video_id: str) -> dict:
             temp_audio_path = temp_audio.name
         
         # Extract audio
-        cmd = ['ffmpeg', '-i', video_path, '-vn', '-acodec', 'pcm_s16le', '-ac', '1', '-ar', '16000', '-y', temp_audio_path]
+        ffmpeg_path = get_ffmpeg_path()
+        cmd = [ffmpeg_path, '-i', video_path, '-vn', '-acodec', 'pcm_s16le', '-ac', '1', '-ar', '16000', '-y', temp_audio_path]
         subprocess.run(cmd, capture_output=True, check=True)
         
         # Get video duration
-        duration_cmd = ['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration', '-of', 'csv=p=0', video_path]
+        ffprobe_path = get_ffprobe_path()
+        duration_cmd = [ffprobe_path, '-v', 'quiet', '-show_entries', 'format=duration', '-of', 'csv=p=0', video_path]
         duration_result = subprocess.run(duration_cmd, capture_output=True, text=True, check=True)
         duration = float(duration_result.stdout.strip())
         
@@ -798,7 +875,8 @@ def tag_video_with_gemini(video_path: str, video_id: str) -> list:
         with tempfile.TemporaryDirectory() as temp_dir:
             # Extract 5 frames evenly spaced
             frame_pattern = os.path.join(temp_dir, 'frame_%03d.jpg')
-            cmd = ['ffmpeg', '-i', video_path, '-vf', 'fps=1/5', '-y', frame_pattern]
+            ffmpeg_path = get_ffmpeg_path()
+            cmd = [ffmpeg_path, '-i', video_path, '-vf', 'fps=1/5', '-y', frame_pattern]
             subprocess.run(cmd, capture_output=True, check=True)
             
             # Get list of extracted frames
@@ -1040,7 +1118,8 @@ def generate_comprehensive_visual_tags_fallback(video_path: str, video_id: str) 
         if len(tags) < 10:  # Only add duration-based tags if we don't have enough content-based tags
             # Get video duration using ffprobe
             import subprocess
-            duration_cmd = ['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration', '-of', 'csv=p=0', video_path]
+            ffprobe_path = get_ffprobe_path()
+            duration_cmd = [ffprobe_path, '-v', 'quiet', '-show_entries', 'format=duration', '-of', 'csv=p=0', video_path]
             duration_result = subprocess.run(duration_cmd, capture_output=True, text=True)
             duration = float(duration_result.stdout.strip()) if duration_result.stdout.strip() else 30
             
@@ -2438,8 +2517,9 @@ def extract_video_clip():
         clip_path = os.path.join(clips_dir, clip_filename)
         
         # Extract clip using FFmpeg
+        ffmpeg_path = get_ffmpeg_path()
         cmd = [
-            'ffmpeg', '-i', video_path,
+            ffmpeg_path, '-i', video_path,
             '-ss', str(start_time),  # Start time
             '-t', str(duration),     # Duration (0.5 seconds)
             '-c', 'copy',            # Copy codecs (fast)
@@ -3964,34 +4044,14 @@ def get_videos():
 def get_video_duration(video_path):
     """Get video duration using FFmpeg"""
     try:
-        # DEBUG: Check PATH and FFmpeg availability
-        import os
-        print(f"DEBUG: Current PATH: {os.environ.get('PATH', 'PATH_NOT_SET')}")
-        print(f"DEBUG: Looking for ffprobe in PATH...")
+        # Get the correct ffprobe path
+        ffprobe_path = get_ffprobe_path()
+        print(f"DEBUG: Using ffprobe path: {ffprobe_path}")
         
-        # Check if ffprobe exists
-        import shutil
-        ffprobe_path = shutil.which('ffprobe')
-        print(f"DEBUG: ffprobe found at: {ffprobe_path}")
-        
-        if not ffprobe_path:
-            print("DEBUG: ffprobe not found in PATH, trying direct path...")
-            # Try direct path
-            direct_path = "C:\\ffmpeg\\bin\\ffprobe.exe"
-            if os.path.exists(direct_path):
-                print(f"DEBUG: Using direct path: {direct_path}")
-                cmd = [
-                    direct_path, '-v', 'quiet', '-show_entries', 'format=duration',
-                    '-of', 'csv=p=0', video_path
-                ]
-            else:
-                print(f"DEBUG: Direct path {direct_path} does not exist")
-                return None
-        else:
-            cmd = [
-                'ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
-                '-of', 'csv=p=0', video_path
-            ]
+        cmd = [
+            ffprobe_path, '-v', 'quiet', '-show_entries', 'format=duration',
+            '-of', 'csv=p=0', video_path
+        ]
         
         print(f"DEBUG: Running command: {' '.join(cmd)}")
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
@@ -4311,21 +4371,8 @@ def render_video_with_scenes(video_path, scenes, output_path, transition_duratio
             
             clip_path = os.path.join(temp_dir, f'clip_{i+1:03d}.mp4')
             
-            # Use more robust FFmpeg command with optimized compression
             # Check if ffmpeg is in PATH, otherwise use direct path
-            ffmpeg_path = 'ffmpeg'
-            try:
-                import shutil
-                if not shutil.which('ffmpeg'):
-                    direct_path = "C:\\ffmpeg\\bin\\ffmpeg.exe"
-                    if os.path.exists(direct_path):
-                        ffmpeg_path = direct_path
-                        print(f"Using direct FFmpeg path: {ffmpeg_path}")
-                    else:
-                        print("ERROR: FFmpeg not found in PATH or direct path")
-                        continue
-            except Exception as e:
-                print(f"Warning: Could not check FFmpeg path: {e}")
+            ffmpeg_path = get_ffmpeg_path()
             
             cmd = [
                 ffmpeg_path, '-i', video_path,

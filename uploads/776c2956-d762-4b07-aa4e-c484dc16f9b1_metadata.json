@@ -1,0 +1,350 @@
+{
+  "videoId": "776c2956-d762-4b07-aa4e-c484dc16f9b1",
+  "userId": "1809157@sbsstc.ac.in",
+  "userEmail": "1809157@sbsstc.ac.in",
+  "filename": "WhatsApp Video 2025-09-01 at 9.03.30 AM.mp4",
+  "gcsPath": "local_storage/1809157@sbsstc.ac.in/776c2956-d762-4b07-aa4e-c484dc16f9b1.mp4",
+  "localPath": "uploads\\776c2956-d762-4b07-aa4e-c484dc16f9b1.mp4",
+  "fileSize": 709060,
+  "fileType": "mp4",
+  "createdAt": "2025-09-01T09:42:26.822462",
+  "status": "uploaded",
+  "duration": null,
+  "transcript": "Satter, Nalia. Gather round, kids. It's time for Sheldon's beloved... In the pre-Christian era, as the winter solstice approached and the plants died, pagans brought entrances of the plants until spring. This custom was later appropriated by Northern Europeans, and eventually it becomes the so-called...",
+  "word_timestamps": [
+    {
+      "word": "Satter,",
+      "start_time": 0.9399999999999995,
+      "end_time": 1.42,
+      "confidence": 0.8
+    },
+    {
+      "word": "Nalia.",
+      "start_time": 1.52,
+      "end_time": 1.92,
+      "confidence": 0.8
+    },
+    {
+      "word": "Gather",
+      "start_time": 2.3,
+      "end_time": 2.58,
+      "confidence": 0.8
+    },
+    {
+      "word": "round,",
+      "start_time": 2.58,
+      "end_time": 3.0,
+      "confidence": 0.8
+    },
+    {
+      "word": "kids.",
+      "start_time": 3.12,
+      "end_time": 3.36,
+      "confidence": 0.8
+    },
+    {
+      "word": "It's",
+      "start_time": 3.58,
+      "end_time": 3.68,
+      "confidence": 0.8
+    },
+    {
+      "word": "time",
+      "start_time": 3.68,
+      "end_time": 3.92,
+      "confidence": 0.8
+    },
+    {
+      "word": "for",
+      "start_time": 3.92,
+      "end_time": 4.18,
+      "confidence": 0.8
+    },
+    {
+      "word": "Sheldon's",
+      "start_time": 4.18,
+      "end_time": 4.62,
+      "confidence": 0.8
+    },
+    {
+      "word": "beloved...",
+      "start_time": 4.62,
+      "end_time": 5.08,
+      "confidence": 0.8
+    },
+    {
+      "word": "In",
+      "start_time": 6.08,
+      "end_time": 6.24,
+      "confidence": 0.8
+    },
+    {
+      "word": "the",
+      "start_time": 6.24,
+      "end_time": 6.46,
+      "confidence": 0.8
+    },
+    {
+      "word": "pre",
+      "start_time": 6.46,
+      "end_time": 6.68,
+      "confidence": 0.8
+    },
+    {
+      "word": "-Christian",
+      "start_time": 6.68,
+      "end_time": 7.1,
+      "confidence": 0.8
+    },
+    {
+      "word": "era,",
+      "start_time": 7.1,
+      "end_time": 7.54,
+      "confidence": 0.8
+    },
+    {
+      "word": "as",
+      "start_time": 7.76,
+      "end_time": 7.8,
+      "confidence": 0.8
+    },
+    {
+      "word": "the",
+      "start_time": 7.8,
+      "end_time": 8.02,
+      "confidence": 0.8
+    },
+    {
+      "word": "winter",
+      "start_time": 8.02,
+      "end_time": 8.28,
+      "confidence": 0.8
+    },
+    {
+      "word": "solstice",
+      "start_time": 8.28,
+      "end_time": 8.68,
+      "confidence": 0.8
+    },
+    {
+      "word": "approached",
+      "start_time": 8.68,
+      "end_time": 9.08,
+      "confidence": 0.8
+    },
+    {
+      "word": "and",
+      "start_time": 9.08,
+      "end_time": 9.28,
+      "confidence": 0.8
+    },
+    {
+      "word": "the",
+      "start_time": 9.28,
+      "end_time": 9.4,
+      "confidence": 0.8
+    },
+    {
+      "word": "plants",
+      "start_time": 9.4,
+      "end_time": 9.68,
+      "confidence": 0.8
+    },
+    {
+      "word": "died,",
+      "start_time": 9.68,
+      "end_time": 10.04,
+      "confidence": 0.8
+    },
+    {
+      "word": "pagans",
+      "start_time": 10.44,
+      "end_time": 10.68,
+      "confidence": 0.8
+    },
+    {
+      "word": "brought",
+      "start_time": 10.68,
+      "end_time": 10.96,
+      "confidence": 0.8
+    },
+    {
+      "word": "entrances",
+      "start_time": 10.96,
+      "end_time": 11.24,
+      "confidence": 0.8
+    },
+    {
+      "word": "of",
+      "start_time": 11.24,
+      "end_time": 11.48,
+      "confidence": 0.8
+    },
+    {
+      "word": "the",
+      "start_time": 11.48,
+      "end_time": 11.6,
+      "confidence": 0.8
+    },
+    {
+      "word": "plants",
+      "start_time": 11.6,
+      "end_time": 11.8,
+      "confidence": 0.8
+    },
+    {
+      "word": "until",
+      "start_time": 11.8,
+      "end_time": 12.16,
+      "confidence": 0.8
+    },
+    {
+      "word": "spring.",
+      "start_time": 12.16,
+      "end_time": 12.6,
+      "confidence": 0.8
+    },
+    {
+      "word": "This",
+      "start_time": 12.94,
+      "end_time": 13.18,
+      "confidence": 0.8
+    },
+    {
+      "word": "custom",
+      "start_time": 13.18,
+      "end_time": 13.34,
+      "confidence": 0.8
+    },
+    {
+      "word": "was",
+      "start_time": 13.34,
+      "end_time": 13.54,
+      "confidence": 0.8
+    },
+    {
+      "word": "later",
+      "start_time": 13.54,
+      "end_time": 13.72,
+      "confidence": 0.8
+    },
+    {
+      "word": "appropriated",
+      "start_time": 13.72,
+      "end_time": 14.24,
+      "confidence": 0.8
+    },
+    {
+      "word": "by",
+      "start_time": 14.24,
+      "end_time": 14.6,
+      "confidence": 0.8
+    },
+    {
+      "word": "Northern",
+      "start_time": 14.6,
+      "end_time": 14.86,
+      "confidence": 0.8
+    },
+    {
+      "word": "Europeans,",
+      "start_time": 14.86,
+      "end_time": 15.3,
+      "confidence": 0.8
+    },
+    {
+      "word": "and",
+      "start_time": 15.72,
+      "end_time": 15.94,
+      "confidence": 0.8
+    },
+    {
+      "word": "eventually",
+      "start_time": 15.94,
+      "end_time": 16.1,
+      "confidence": 0.8
+    },
+    {
+      "word": "it",
+      "start_time": 16.1,
+      "end_time": 16.24,
+      "confidence": 0.8
+    },
+    {
+      "word": "becomes",
+      "start_time": 16.24,
+      "end_time": 16.44,
+      "confidence": 0.8
+    },
+    {
+      "word": "the",
+      "start_time": 16.44,
+      "end_time": 16.64,
+      "confidence": 0.8
+    },
+    {
+      "word": "so",
+      "start_time": 16.64,
+      "end_time": 16.78,
+      "confidence": 0.8
+    },
+    {
+      "word": "-called...",
+      "start_time": 16.78,
+      "end_time": 17.04,
+      "confidence": 0.8
+    }
+  ],
+  "visual_tags": [
+    {
+      "tag": "video",
+      "confidence": 0.9,
+      "category": "media"
+    },
+    {
+      "tag": "digital content",
+      "confidence": 0.8,
+      "category": "media"
+    },
+    {
+      "tag": "short video",
+      "confidence": 0.8,
+      "category": "duration"
+    },
+    {
+      "tag": "low resolution",
+      "confidence": 0.7,
+      "category": "quality"
+    },
+    {
+      "tag": "visual content",
+      "confidence": 0.9,
+      "category": "content"
+    },
+    {
+      "tag": "mp4",
+      "confidence": 0.8,
+      "category": "format"
+    }
+  ],
+  "transcribedAt": "2025-09-01T09:42:30.655698",
+  "story": {
+    "storyId": "7e346b26-a159-41bc-9ebd-0de34f8b2814",
+    "scenes": [
+      {
+        "start": 1.7,
+        "end": 6.7,
+        "caption": "\ud83c\udf66 Wonderful Generate A Positive Long Story Adventure",
+        "narration": "Our wonderful GENERATE A POSITIVE LONG STORY adventure begins with pure excitement and joy."
+      },
+      {
+        "start": 5.11,
+        "end": 10.11,
+        "caption": "\u2744\ufe0f Magical Generate A Positive Long Story Moments",
+        "narration": "The magical GENERATE A POSITIVE LONG STORY moments unfold with amazing energy and happiness."
+      }
+    ]
+  },
+  "storyPrompt": "GENERATE A POSITIVE LONG STORY",
+  "storyGeneratedAt": "2025-09-01T09:42:57.746533"
+}
