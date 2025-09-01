@@ -2009,8 +2009,37 @@ def transcribe_direct_video():
         
         if WHISPER_MODEL:
             try:
+                # Limit transcription to the first N seconds to avoid long-running jobs on Render
+                max_secs_env = os.getenv('TRANSCRIBE_MAX_DURATION_SEC', '30')
+                try:
+                    max_secs = max(5, int(max_secs_env))
+                except Exception:
+                    max_secs = 30
+
+                # Extract short mono 16kHz WAV to reduce CPU/memory usage
+                temp_dir = tempfile.mkdtemp(prefix="transcribe_")
+                short_wav = os.path.join(temp_dir, f"{video_id}_first{max_secs}s.wav")
+                used_path = video_path
+                try:
+                    ffmpeg_bin = get_ffmpeg_path()
+                    cmd = [
+                        ffmpeg_bin, '-y', '-hide_banner', '-loglevel', 'error',
+                        '-i', video_path,
+                        '-t', str(max_secs),
+                        '-vn',              # strip video
+                        '-ac', '1',         # mono
+                        '-ar', '16000',     # 16kHz
+                        '-f', 'wav', short_wav
+                    ]
+                    subprocess.run(cmd, check=True)
+                    if os.path.exists(short_wav):
+                        used_path = short_wav
+                        print(f"🎧 Using clipped audio for transcription: {used_path}")
+                except Exception as clip_err:
+                    print(f"⚠️ Failed to clip audio, falling back to full file: {clip_err}")
+
                 segments, info = WHISPER_MODEL.transcribe(
-                    video_path,  # Transcribe video directly
+                    used_path,  # Transcribe clipped audio if available
                     beam_size=1,  # Minimal beam size for cloud
                     best_of=1,    # Single pass for speed
                     temperature=0.0,
@@ -2082,7 +2111,7 @@ def transcribe_direct_video():
                 except Exception as save_error:
                     print(f"⚠️ Error saving transcription to metadata: {save_error}")
                 
-                return jsonify({
+                resp = jsonify({
                     "success": True,
                     "transcription": transcript_text,
                     "language": info.language if 'info' in locals() else "en",
@@ -2090,6 +2119,15 @@ def transcribe_direct_video():
                     "word_count": len(transcript_text.split()),
                     "method": "direct_whisper"
                 })
+                # Cleanup temp audio
+                try:
+                    if os.path.exists(short_wav):
+                        os.remove(short_wav)
+                    if os.path.isdir(temp_dir):
+                        os.rmdir(temp_dir)
+                except Exception:
+                    pass
+                return resp
                 
             except Exception as e:
                 print(f"❌ Direct transcription failed: {e}")
