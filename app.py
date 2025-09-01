@@ -52,8 +52,7 @@ CORS(app,
      origins=[
          "http://localhost:5173", 
          "http://localhost:3000", 
-         "https://frontend-footage-flow.vercel.app",
-         "https://*.vercel.app"
+         "https://frontend-footage-flow.vercel.app"
      ],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
@@ -83,7 +82,15 @@ if WHISPER_ENABLED:
         compute_type = os.getenv('WHISPER_COMPUTE_TYPE', 'int8')
         
         print(f"🔄 Loading Whisper model: {model_size} with {compute_type}")
-        WHISPER_MODEL = WhisperModel(model_size, device="cpu", compute_type=compute_type)
+        
+        # For cloud deployment, use smaller model and reduced threads
+        WHISPER_MODEL = WhisperModel(
+            model_size, 
+            device="cpu", 
+            compute_type=compute_type,
+            num_workers=1,  # Reduce workers for cloud
+            cpu_threads=2   # Limit CPU threads
+        )
         print(f"✅ Whisper {model_size} model loaded successfully")
     except Exception as e:
         WHISPER_MODEL = None
@@ -1965,9 +1972,17 @@ def transcribe_direct():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/transcribe-direct-video', methods=['POST'])
+@app.route('/transcribe-direct-video', methods=['POST', 'OPTIONS'])
 def transcribe_direct_video():
     """Direct transcription using Whisper - works with videoId like old route"""
+    if request.method == 'OPTIONS':
+        # Handle preflight request
+        response = jsonify({'status': 'OK'})
+        response.headers.add('Access-Control-Allow-Origin', 'https://frontend-footage-flow.vercel.app')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+        response.headers.add('Access-Control-Allow-Methods', 'POST,OPTIONS')
+        return response
+        
     try:
         data = request.get_json()
         video_id = data.get('videoId')
