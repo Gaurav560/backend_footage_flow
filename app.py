@@ -47,7 +47,7 @@ else:
 
 app = Flask(__name__)
 
-# Configure CORS to allow requests from frontend
+# Configure CORS to allow requests from frontend - more permissive for debugging
 CORS(app, 
      origins=[
          "http://localhost:5173", 
@@ -56,8 +56,20 @@ CORS(app,
          "https://*.vercel.app"
      ],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization"],
-     supports_credentials=True)
+     allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+     supports_credentials=True,
+     expose_headers=["Content-Type", "Authorization"])
+
+# Add manual CORS headers for problematic endpoints
+@app.after_request
+def after_request(response):
+    origin = request.headers.get('Origin')
+    if origin in ['https://frontend-footage-flow.vercel.app', 'http://localhost:5173', 'http://localhost:3000']:
+        response.headers.add('Access-Control-Allow-Origin', origin)
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 # Initialize Whisper model globally (optimized for cloud deployment)
 WHISPER_MODEL = None
@@ -1397,6 +1409,19 @@ def health_check():
         'status': 'healthy',
         'timestamp': datetime.now().isoformat(),
         'service': 'Footage Flow Backend'
+    })
+
+@app.route('/cors-test', methods=['GET', 'POST', 'OPTIONS'])
+def cors_test():
+    """Test CORS configuration"""
+    if request.method == 'OPTIONS':
+        return '', 200
+    
+    return jsonify({
+        'status': 'CORS working',
+        'origin': request.headers.get('Origin', 'No origin'),
+        'method': request.method,
+        'timestamp': datetime.now().isoformat()
     })
 
 @app.route('/auth/google-signin', methods=['POST'])
