@@ -1,39 +1,43 @@
 # Core Flask dependencies (relaxed pins for Python 3.13 compatibility)
 Flask>=3.0.0,<4.0.0
-Flask-CORS>=4.0.0,<5.0.0
+Flask-CORS==4.0.0
 gunicorn>=21.2.0,<22.0.0
 python-dotenv>=1.0.0,<2.0.0
 Werkzeug>=3.0.1,<4.0.0
 
-# Google Cloud dependencies
+# Google Cloud dependencies - FIXED VERSION CONFLICTS
 google-auth>=2.23.4
 google-auth-oauthlib>=1.1.0
 google-auth-httplib2>=0.1.1
 google-cloud-speech>=2.21.0
 google-cloud-storage>=2.10.0
 google-cloud-vision>=3.4.4
-google-genai>=0.2.0
+# REMOVED: google-genai (conflicts with google-generativeai)
 google-generativeai>=0.8.3
 
-
-# Audio/Video processing - update OpenCV for NumPy 2.x / Python 3.13 support
+# Audio/Video processing - ADDED PSUTIL FOR MEMORY MONITORING
 opencv-python-headless>=4.9.0
 ffmpeg-python>=0.2.0
 SpeechRecognition>=3.10.0
+psutil>=5.9.0
 
 # Whisper dependencies (works without GPU; optional at runtime)
 faster-whisper>=0.9.0
 
 # Core dependencies - NumPy 2.x required for Python 3.13 wheels
-numpy>=2.0.0
+numpy>=2.0.0,<3.0.0
 requests>=2.31.0
 
 # Additional production dependencies
-urllib3>=2.0.7
-certifi
-charset-normalizer
-idna
+urllib3>=2.0.7,<3.0.0
+certifi>=2023.7.22
+charset-normalizer>=3.2.0
+idna>=3.4
 
 # For better production stability
-six
-typing-extensions
+six>=1.16.0
+typing-extensions>=4.7.0
+
+# ADDED: Essential for Render deployment stability
+wheel>=0.41.0
+setuptools>=68.0.0

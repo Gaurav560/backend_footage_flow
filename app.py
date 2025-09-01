@@ -356,7 +356,6 @@ def get_video_metadata(video_id):
             return {
                 'videoId': row[0],
                 'userId': row[1],
-                'userEmail': row[2],
                 'filename': row[3],
                 'localPath': row[4],
                 'fileSize': row[5],
@@ -624,7 +623,7 @@ Now analyze this input:
 
                 if gemini_client:
                     model = genai.GenerativeModel('gemini-1.5-flash')
-                    response = model.generate_content(prompt)
+                    response = model.generate_content(tagging_prompt)
                 raw = getattr(response, 'text', '') or ''
                 json_block = _extract_json_block(raw)
                 try:
@@ -1975,9 +1974,12 @@ def transcribe_direct():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/transcribe-direct-video', methods=['POST'])
+@app.route('/transcribe-direct-video', methods=['POST', 'OPTIONS'])
 def transcribe_direct_video():
     """Direct transcription using Whisper - works with videoId like old route"""
+    # Handle CORS preflight quickly
+    if request.method == 'OPTIONS':
+        return ('', 200)
     try:
         data = request.get_json()
         video_id = data.get('videoId')
