@@ -95,6 +95,27 @@ def after_request(response):
 def cors_preflight(path):
     return ('', 204)
 
+# Lightweight endpoints to validate CORS from the frontend
+@app.route('/cors-test', methods=['GET'])
+def cors_test():
+    return jsonify({
+        'ok': True,
+        'origin': request.headers.get('Origin'),
+        'path': '/cors-test'
+    }), 200
+
+@app.route('/echo', methods=['POST'])
+def echo():
+    try:
+        payload = request.get_json() or {}
+    except Exception:
+        payload = {}
+    return jsonify({
+        'ok': True,
+        'origin': request.headers.get('Origin'),
+        'received': payload
+    }), 200
+
 
 
 # Initialize Whisper model globally (optimized for cloud deployment)
