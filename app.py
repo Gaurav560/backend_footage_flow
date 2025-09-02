@@ -400,18 +400,18 @@ GCP_PROJECT_ID = None
 
 # Initialize Gemini AI
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+gemini_client = None  # Will hold the actual model object
 if GEMINI_API_KEY:
     try:
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        test_response = model.generate_content("Hello")
+        gemini_client = genai.GenerativeModel('gemini-1.5-flash')
+        test_response = gemini_client.generate_content("Hello")
         print("✅ Gemini AI initialized successfully with gemini-1.5-flash")
-        gemini_client = True  # Flag to indicate Gemini is available
     except Exception as e:
         print(f"⚠️ Gemini AI initialization failed: {str(e)}")
-        gemini_client = False
+        gemini_client = None
 else:
-    gemini_client = False
+    gemini_client = None
     print("⚠️ GEMINI_API_KEY not set. Story generation will use enhanced mock data.")
 
 # Upload configuration
@@ -738,10 +738,7 @@ def transcribe_video_with_gemini(video_path: str, video_id: str) -> dict:
         """
         
         # Call Gemini API
-        response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        response = gemini_client.generate_content(prompt)
         
         raw_text = getattr(response, 'text', '') or ''
         json_block = _extract_json_block(raw_text)
@@ -890,16 +887,10 @@ def tag_video_with_gemini(video_path: str, video_id: str) -> list:
                         image_part = None
 
                 if image_part is not None:
-                    response = gemini_client.models.generate_content(
-                        model="gemini-2.5-flash",
-                        contents=[image_part, prompt]
-                    )
+                    response = gemini_client.generate_content([image_part, prompt])
                 else:
                     # Last-resort fallback: text-only (no image part)
-                    response = gemini_client.models.generate_content(
-                        model="gemini-2.5-flash",
-                        contents=prompt
-                    )
+                    response = gemini_client.generate_content(prompt)
             
             raw_text = getattr(response, 'text', '') or ''
             json_block = _extract_json_block(raw_text)
@@ -2767,10 +2758,7 @@ def generate_inspirational_story():
                     f"Use concrete examples, realistic scenarios, and authentic emotions related to their specific situation. "
                     f"Write a story that feels like it was written specifically for them and their unique circumstances."
                 )
-                response = gemini_client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=full_prompt
-                )
+                response = gemini_client.generate_content(full_prompt)
                 story_text = (response.text or '').strip()
             except Exception as model_err:
                 print(f"Gemini inspirational story error: {str(model_err)}")
@@ -2790,10 +2778,7 @@ def generate_inspirational_story():
                     f"Follow this style guide: {style_guide}. Make it feel personal and tailored to their specific challenge. "
                     f"Return only the expanded story as plain paragraphs.\n\nCURRENT STORY:\n{story_text}"
                 )
-                refine_resp = gemini_client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=refine_prompt
-                )
+                refine_resp = gemini_client.generate_content(refine_prompt)
                 refined = (refine_resp.text or '').strip()
                 if refined:
                     story_text = refined
@@ -2887,10 +2872,7 @@ def generate_emotional_journey():
         story_text = None
         if gemini_client:
             try:
-                response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+                response = gemini_client.generate_content(prompt)
                 story_text = (getattr(response, 'text', '') or '').strip()
             except Exception as model_err:
                 print(f"Gemini emotional journey error: {str(model_err)}")
@@ -3020,10 +3002,7 @@ def generate_story_with_gemini(transcript, word_timestamps, visual_tags, prompt,
         """
         
         print(f"DEBUG: Sending request to Gemini with context length: {len(context)}")
-        response = gemini_client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=context
-        )
+        response = gemini_client.generate_content(context)
         story_json = response.text.strip()
         
         print(f"DEBUG: Gemini response received: {story_json[:200]}...")
@@ -5067,10 +5046,7 @@ VIDEO CONTENT ANALYSIS:
                     f"Make it feel personal and authentic to the actual content, not generic. "
                     f"Write a story that captures the essence and meaning of what was shared in this specific video."
                 )
-                response = gemini_client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=full_prompt
-                )
+                response = gemini_client.generate_content(full_prompt)
                 story_text = (response.text or '').strip()
             except Exception as model_err:
                 print(f"Gemini content-based story error: {str(model_err)}")
@@ -5090,10 +5066,7 @@ VIDEO CONTENT ANALYSIS:
                     f"Follow this style guide: {style_guide}. "
                     f"Return only the expanded story as plain paragraphs.\n\nCURRENT STORY:\n{story_text}"
                 )
-                refine_resp = gemini_client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=refine_prompt
-                )
+                refine_resp = gemini_client.generate_content(refine_prompt)
                 refined = (refine_resp.text or '').strip()
                 if refined:
                     story_text = refined
@@ -5464,10 +5437,7 @@ def _generate_content_based_emotional_analysis(transcript: str, visual_tags: lis
 
     if gemini_client:
         try:
-            response = gemini_client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=analysis_prompt
-            )
+            response = gemini_client.generate_content(analysis_prompt)
             analysis = (response.text or '').strip()
             return analysis
         except Exception as model_err:
@@ -5509,10 +5479,7 @@ def _generate_content_based_contrasting_stories(transcript: str, visual_tags: li
 
     if gemini_client:
         try:
-            response = gemini_client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=stories_prompt
-            )
+            response = gemini_client.generate_content(stories_prompt)
             stories_text = (response.text or '').strip()
             
             # Parse the response to extract both stories
