@@ -19,12 +19,12 @@ opencv-python-headless>=4.8.0
 ffmpeg-python>=0.2.0
 SpeechRecognition>=3.10.0
 
-# Whisper dependencies
-faster-whisper>=1.0.0
-openai-whisper>=20231117
+# Choose ONE Whisper implementation:
+faster-whisper>=1.0.0  # Recommended for AWS
+# openai-whisper>=20231117  # Comment out for production
 
 # Core dependencies
-numpy>=1.24.0,<2.0.0
+numpy>=1.24.0
 requests>=2.31.0
 pydantic>=2.0.0
 typing-extensions>=4.0.0

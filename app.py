@@ -4961,8 +4961,19 @@ def generate_content_based_inspirational_story():
             mode = 'Hopeful'
 
         # Load video metadata to get actual content
-        metadata_file = os.path.join('uploads', 'videos', f"{video_id}_metadata.json")
-        if not os.path.exists(metadata_file):
+        metadata_file = None
+        possible_metadata_paths = [
+            os.path.join(UPLOAD_FOLDER, f"{video_id}_metadata.json"),
+            os.path.join(UPLOAD_FOLDER, "videos", f"{video_id}_metadata.json"),
+            os.path.join(UPLOAD_FOLDER, "videos", "videos", f"{video_id}_metadata.json")
+        ]
+        
+        for path in possible_metadata_paths:
+            if os.path.exists(path):
+                metadata_file = path
+                break
+                
+        if not metadata_file:
             return jsonify({'error': 'Video not found'}), 404
 
         with open(metadata_file, 'r', encoding='utf-8') as f:
@@ -5356,8 +5367,19 @@ def generate_content_based_emotional_journey():
             return jsonify({'error': 'Video ID is required'}), 400
 
         # Load video metadata to get actual content
-        metadata_file = os.path.join('uploads', 'videos', f"{video_id}_metadata.json")
-        if not os.path.exists(metadata_file):
+        metadata_file = None
+        possible_metadata_paths = [
+            os.path.join(UPLOAD_FOLDER, f"{video_id}_metadata.json"),
+            os.path.join(UPLOAD_FOLDER, "videos", f"{video_id}_metadata.json"),
+            os.path.join(UPLOAD_FOLDER, "videos", "videos", f"{video_id}_metadata.json")
+        ]
+        
+        for path in possible_metadata_paths:
+            if os.path.exists(path):
+                metadata_file = path
+                break
+                
+        if not metadata_file:
             return jsonify({'error': 'Video not found'}), 404
 
         with open(metadata_file, 'r', encoding='utf-8') as f:
